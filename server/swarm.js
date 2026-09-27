@@ -28,13 +28,28 @@ async function callIBMBob(systemPrompt, userPrompt) {
                     { role: "user", content: userPrompt }
                 ],
                 temperature: 0.7,
-                max_tokens: 4000
+                max_tokens: 8000
             })
         });
 
         const data = await response.json();
         if (data.error) throw new Error(data.error.message);
-        return data.choices[0].message.content.replace(/```html/g, '').replace(/```/g, '').trim();
+
+        let code = data.choices[0].message.content || '';
+        if (code.includes('```')) {
+            const match = code.match(/```(?:html)?\s*([\s\S]*?)```/);
+            if (match) code = match[1];
+            else code = code.replace(/```(?:html)?/gi, '').replace(/```/g, '');
+        }
+        const docStart = code.search(/<!DOCTYPE|<html/i);
+        if (docStart !== -1) {
+            code = code.substring(docStart);
+        }
+        const docEnd = code.lastIndexOf('</html>');
+        if (docEnd !== -1) {
+            code = code.substring(0, docEnd + 7);
+        }
+        return code.trim();
     } catch (error) {
         console.error("API Error:", error);
         throw error;
@@ -459,20 +474,38 @@ function enforceStrictImages(html, domainConfig) {
 // 2. 4 Specialized Subagents
 async function uiSubagent(taskDescription) {
     const images = await fetchStrictContextualImages(taskDescription);
-    const prompt = "You are a World-Class Awwwards-Winning iOS Executive Creative Technologist & Web Developer. DO NOT output markdown. Output ONLY valid, raw HTML code.\n\n" +
-    "You MUST generate an ultra-attractive, modern, interactive Gen-Z web experience. The website MUST NOT be basic HTML.\n" +
-    "Requirements:\n" +
-    "1. Use TailwindCSS (<script src='https://cdn.tailwindcss.com'></script>) and GSAP (<script src='https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js'></script>).\n" +
-    "2. Include Google Fonts (e.g. Syne, Plus Jakarta Sans, Orbitron, or Sorts Mill Goudy).\n" +
-    "3. Aesthetic: Liquid Glassmorphism, deep moody obsidian backgrounds (#070709 or #050c08), glowing mesh accents, floating badges, bold typography.\n" +
-    "4. MANDATORY RELEVANT IMAGES (DO NOT USE RANDOM OR BROKEN PICS):\n" +
+    const prompt = "You are a World-Class Awwwards-Winning iOS Executive Creative Technologist & Web Developer. DO NOT output markdown. Output ONLY valid, raw, complete HTML code from <!DOCTYPE html> to </html>.\n\n" +
+    "You MUST generate an ultra-attractive, modern, interactive Gen-Z web experience. The website MUST NOT be basic HTML.\n\n" +
+    "MANDATORY CODE ESSENTIALS & QUALITY REQUIREMENTS:\n" +
+    "1. Complete HTML5 Structure: Include <!DOCTYPE html>, <html lang='en'>, <head>, meta viewport, responsive layout, and closing </html>.\n" +
+    "2. Libraries & Scripts:\n" +
+    "   - TailwindCSS: <script src='https://cdn.tailwindcss.com'></script>\n" +
+    "   - GSAP: <script src='https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js'></script>\n" +
+    "   - Google Fonts: Include Plus Jakarta Sans, Syne, Orbitron, or Sorts Mill Goudy.\n" +
+    "3. Design Aesthetics (Awwwards Grade):\n" +
+    "   - Liquid Glassmorphism (backdrop-filter: blur(28px) saturate(180%), subtle borders rgba(255,255,255,0.15))\n" +
+    "   - Deep moody obsidian backgrounds (#070709 or #050c08) with glowing ambient mesh gradients\n" +
+    "   - Floating glass pill badges, refined typography hierarchy, and micro-interactions\n" +
+    "4. MANDATORY 100% RELEVANT IMAGES (NO RANDOM, PLACEHOLDER, OR BROKEN PICS):\n" +
     "   - Hero Showcase Image: " + images.heroImg + "\n" +
-    "   - Card 1 Image: " + images.cardImgs[0] + "\n" +
-    "   - Card 2 Image: " + images.cardImgs[1] + "\n" +
-    "   - Card 3 Image: " + images.cardImgs[2] + "\n" +
-    "   Every <img> element MUST strictly correspond to its specific card heading.\n" +
-    "5. Interactivity: Include working JavaScript in <script> tags for buttons, interactive tab switchers, 3D card hover tilt, Web Audio synthesized sounds on button clicks, and modal/drawer toggles.\n" +
-    "6. Sections: Floating glass navbar, impactful hero section with oversized headline and interactive product/stage showcase, bento grid with 3 feature cards, and interactive footer.\n\n" +
+    "   - Feature Card 1 Image: " + images.cardImgs[0] + "\n" +
+    "   - Feature Card 2 Image: " + images.cardImgs[1] + "\n" +
+    "   - Feature Card 3 Image: " + images.cardImgs[2] + "\n" +
+    "   Every <img> element MUST strictly correspond to its specific card heading. Never use images from unrelated topics.\n" +
+    "5. Rich Interactivity (Working Vanilla JavaScript in <script>):\n" +
+    "   - Interactive tab switcher / filter buttons that actively update UI or switch cards\n" +
+    "   - Slide-out drawer or modal dialog with working open/close toggle\n" +
+    "   - Web Audio API Sound Effects (synthesize pleasant frequencies like 528Hz or 880Hz on button clicks)\n" +
+    "   - Dynamic counter / telemetry state update (e.g. cart badge, likes, stats)\n" +
+    "   - GSAP load animation (smooth fade-up stagger on hero headline, cards, and navigation)\n" +
+    "6. Sections Required:\n" +
+    "   - Floating glass navbar with brand logo, nav links, and interactive action button\n" +
+    "   - Impactful hero section with oversized headline, subtitle, and primary showcase stage\n" +
+    "   - Bento grid with at least 3 distinct feature cards with photography, badges, and descriptions\n" +
+    "   - Polished footer with brand credits and social links\n" +
+    "7. STRICT ZERO HALLUCINATION:\n" +
+    "   - Do NOT include any unrelated company names or terms like 'Vasundhara'.\n" +
+    "   - The theme must 100% match the user's requested topic: '" + taskDescription + "'.\n\n" +
     "Task: " + taskDescription + "\n\n" +
     "Synthesize the complete, production-ready, beautiful HTML prototype for this task now:";
     
@@ -678,5 +711,5 @@ app.post('/api/swarm', async (req, res) => {
 
 const PORT = 3000;
 app.listen(PORT, () => {
-    console.log("🤖 DevSwarm Backend running on port " + PORT + " with GenZ Elite UI Generator");
+    console.log("🤖 Code Review Agent & Swarm Backend running on port " + PORT + " with Elite UI Generator");
 });

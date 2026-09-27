@@ -423,7 +423,7 @@ export default function App() {
         >
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
-            <span className="text-xs font-semibold text-white tracking-widest uppercase font-mono">DevSwarm OS 18</span>
+            <span className="text-xs font-semibold text-white tracking-widest uppercase font-mono">Agent OS 2.0</span>
           </div>
           <span className="text-white/30 text-xs">|</span>
           <span className="text-xs text-emerald-200/80 font-medium hidden sm:inline">4 Neural Nodes Active • 60 FPS GSAP</span>
@@ -450,16 +450,16 @@ export default function App() {
             <div className="inline-flex items-center gap-2.5 px-5 py-2 mb-6 rounded-full bg-white/[0.09] border border-white/20 backdrop-blur-2xl shadow-lg">
               <Leaf size={15} className="text-emerald-400 animate-pulse" />
               <span className="text-xs font-semibold text-emerald-100 tracking-[0.25em] uppercase">
-                Autonomous Code Review & Swarm Architecture • VisionOS v3.4
+                Autonomous Multi-Agent Architecture • VisionOS v3.4
               </span>
             </div>
 
             <h1 className="font-goudy text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-normal tracking-tight goudy-gradient-title leading-[1.05] drop-shadow-[0_10px_35px_rgba(0,0,0,0.6)]">
-              DevSwarm AI
+              Code Review Agent
             </h1>
 
             <p className="font-goudy italic text-xl sm:text-2xl md:text-3xl text-emerald-100/90 font-light max-w-3xl mx-auto tracking-wide mt-5 leading-relaxed drop-shadow-md">
-              “Engineered with executive precision and organic nature serenity — turning human intent into living, award-winning digital prototypes.”
+              “Autonomous Multi-Agent Quality Guard powered by IBM Bob 2.0 — auditing standards, refactoring code, and synthesizing next-gen web experiences.”
             </p>
           </motion.div>
 
