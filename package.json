@@ -5,10 +5,14 @@
   "main": "review-agent.js",
   "type": "commonjs",
   "scripts": {
+    "build": "cd dashboard && npm install && npm run build",
     "start": "node review-agent.js",
     "review": "node review-agent.js",
     "test": "node --test app.test.js",
     "fix": "node review-agent.js --fix"
+  },
+  "dependencies": {
+    "vite": "^8.3.0"
   },
   "keywords": [
     "code-review",
