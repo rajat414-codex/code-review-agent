@@ -1,0 +1,23 @@
+{
+  "name": "code-review-agent",
+  "version": "1.0.0",
+  "description": "Autonomous Multi-Agent Code Review & Quality Guard powered by IBM Bob 2.0",
+  "main": "review-agent.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node review-agent.js",
+    "review": "node review-agent.js",
+    "test": "node --test app.test.js",
+    "fix": "node review-agent.js --fix"
+  },
+  "keywords": [
+    "code-review",
+    "multi-agent",
+    "autonomous-agent",
+    "ibm-bob",
+    "code-quality",
+    "compliance-guard"
+  ],
+  "author": "Rajat Kamal",
+  "license": "MIT"
+}
